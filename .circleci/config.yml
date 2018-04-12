@@ -1,0 +1,64 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/profile
+    docker:
+      - image: karthikiyengar/node-nightwatch:0.0.1
+
+    steps:
+      - checkout
+      - restore_cache:
+          key: profile-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: System information
+          command: |
+            echo "Node $(node -v)"
+            echo "Yarn v$(yarn --version)"
+      - run:
+          name: Install dependencies
+          command: yarn
+      - run:
+          name: Upgrade Chrome
+          command: |
+            wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+            sudo apt-get update
+            sudo apt-get install google-chrome-stable
+      - save_cache:
+          key: profile-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/profile/node_modules
+            - ~/.cache/yarn/
+      - save_cache:
+          key: profile-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/profile
+
+  deploy_master:
+    working_directory: ~/profile
+    docker:
+      - image: karthikiyengar/node-nightwatch:0.0.1
+
+    steps:
+      - restore_cache:
+          key: profile-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Install awscli
+          command: |
+            sudo apt install python-pip python-dev
+            sudo pip install awscli
+      - run:
+          name: Deploy to S3 if tests pass and branch is master
+          command: sh ~/profile/deploy.sh --env tajima
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy_master:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
