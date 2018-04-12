@@ -27,23 +27,23 @@ case ${ENV} in
     ;;
     "jo")
         SYNC_BUCKET="static-new-employee-2-290203874812"
-        CLOUDFRONT_DISTRIBUTION_ID="E15Q55MT71GRII"
+        CLOUDFRONT_DISTRIBUTION_ID="E1BE61XLJJRZST"
     ;;
     "murata")
         SYNC_BUCKET="static-new-employee-3-290203874812"
-        CLOUDFRONT_DISTRIBUTION_ID="E1SJFFE0FDMQ4B"
+        CLOUDFRONT_DISTRIBUTION_ID="E1S908RG1B6OCG"
     ;;
     "takewaka")
         SYNC_BUCKET="static-new-employee-4-290203874812"
-        CLOUDFRONT_DISTRIBUTION_ID="E1SJFFE0FDMQ4B"
+        CLOUDFRONT_DISTRIBUTION_ID="E3BKXIO30YEJFF"
     ;;
     "tajima")
         SYNC_BUCKET="static-new-employee-5-290203874812"
-        CLOUDFRONT_DISTRIBUTION_ID="E1SJFFE0FDMQ4B"
+        CLOUDFRONT_DISTRIBUTION_ID="E3SNZ0HSDMAQIW"
     ;;
     "maki")
         SYNC_BUCKET="static-new-employee-6-290203874812"
-        CLOUDFRONT_DISTRIBUTION_ID="E1SJFFE0FDMQ4B"
+        CLOUDFRONT_DISTRIBUTION_ID="E30Y6TWR4YHEGY"
     ;;
     *)
         echo "[ERROR] Invalid value --env: '${ENV}'"
@@ -52,7 +52,7 @@ case ${ENV} in
     ;;
 esac
 
-deploy() {    
+deploy() {
     aws s3 cp ${PROJECT_ROOT_DIR} s3://$SYNC_BUCKET --recursive --exclude '*.sh' --exclude '.*'
 }
 
